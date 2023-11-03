@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:21 AS builder
 
 WORKDIR /app
 
@@ -8,6 +8,14 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
+FROM node:21-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 8080
 
-CMD [ "node", "run", "start" ]
+CMD [ "node", "dist/app.js" ]
